@@ -27,19 +27,33 @@ namespace FuzzyLogic.Classes
             }
         }
 
-        public DataClass()
+        public DataClass(string tableName)
         {
             ExpertClasses = new Dictionary<string, ExpertClass>();
-            DataTable = new DataTable("Table1");
+            DataTable = new DataTable(tableName);
             Load();
+            DataTable.RowChanging += DataTable_Row_Changing;
+            //Calculation();
             //GenerateDataTable();
         }
 
-        public DataClass(Dictionary<string, ExpertClass> expertClasses)
+        public DataClass(string tableName, Dictionary<string, ExpertClass> expertClasses)
         {
             ExpertClasses = expertClasses;
-            DataTable = new DataTable("Table1");
+            DataTable = new DataTable(tableName);
             GenerateDataTable();
+        }
+
+        private void DataTable_Row_Changing(object sender, DataRowChangeEventArgs e)
+        {
+            var expertName = e.Row[0].ToString();
+            var termName = e.Row[1].ToString();
+            var temp = ExpertClasses[expertName].ValuesDictionary;
+            var termValues = temp.Select(c => c.Key.TermValue).ToList();
+            foreach (var termValue in termValues)
+            {
+                temp[(termName, termValue)] = Convert.ToDecimal(e.Row[termValue]);
+            }
         }
 
         public void Save()
@@ -66,18 +80,17 @@ namespace FuzzyLogic.Classes
             var J = 0;
             foreach (var expertName in expertNames)
             {
+                //I = 0;
                 var expert = new ExpertClass(expertName);
                 foreach (var termName in termNames)
                 {
-                    J = I;
                     foreach (var termValue in termValues)
                     {
                         var item = DataTable.Rows[I][termValue].ToString();
-                        expert.ValuesDictionary[(termName, termValue)] = 0;
-                        I++;
+                        expert.ValuesDictionary[(termName, termValue)] = Convert.ToDecimal(item);
                     }
 
-                    I = J;
+                    I++;
                 }
 
                 ExpertClasses[expertName] = expert;
@@ -138,12 +151,25 @@ namespace FuzzyLogic.Classes
             }
         }
 
-        public void Calculation()
+        public ExpertClass Calculation()
         {
-            foreach (var VARIABLE in )
+            var resultDictionary = new Dictionary<(string TermName, string TermValue), decimal>();
+            var expertsDictionary = ExpertClass.GetByExpertTermValue(ExpertClasses);
+            var allExpertNames = expertsDictionary.Keys.Select(c => c.ExpertName).Distinct();
+            var allTermNames = expertsDictionary.Keys.Select(c => c.TermName).Distinct();
+            var allTermValues = expertsDictionary.Keys.Select(c => c.TermValue).Distinct();
+
+            foreach (var termValue in allTermValues)
             {
-                
+                foreach (var termName in allTermNames)
+                {
+                    var valueByTermNameAndTermValues = expertsDictionary.Where(c => c.Key.TermValue == termValue && c.Key.TermName == termName).ToList();
+                    var valuesSum = valueByTermNameAndTermValues.Sum(c => c.Value);
+                    resultDictionary[(termName, termValue)] = valuesSum;
+                }
             }
+
+            return new ExpertClass("Общая сумма", resultDictionary);
         }
     }
 }
