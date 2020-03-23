@@ -155,7 +155,6 @@ namespace FuzzyLogic.Classes
         {
             var resultDictionary = new Dictionary<(string TermName, string TermValue), decimal>();
             var expertsDictionary = ExpertClass.GetByExpertTermValue(ExpertClasses);
-            var allExpertNames = expertsDictionary.Keys.Select(c => c.ExpertName).Distinct();
             var allTermNames = expertsDictionary.Keys.Select(c => c.TermName).Distinct();
             var allTermValues = expertsDictionary.Keys.Select(c => c.TermValue).Distinct();
 

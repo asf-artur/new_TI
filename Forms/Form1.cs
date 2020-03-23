@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 using FuzzyLogic.Classes;
 
 namespace FuzzyLogic.Forms
@@ -41,7 +42,25 @@ namespace FuzzyLogic.Forms
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            var calc = _dataClass.Calculation();
+            var tempDataClass = new DataClass("Table2", new Dictionary<string, ExpertClass>() { [calc.Name] = calc });
+            _workWithDataGrid1 = new WorkWithDataGrid(
+                dataGridView2,
+                tempDataClass);
+            chart1.Series.Clear();
+            foreach (var termName in calc.TermNames)
+            {
+                chart1.Series.Add(termName);
+                chart1.Series[termName].ChartType = SeriesChartType.Line;
+                chart1.Series[termName].MarkerStyle = MarkerStyle.Circle;
+                chart1.Series[termName].BorderWidth = 5;
+                chart1.Series[termName].MarkerSize = 12;
+                var I = 0;
+                foreach (var termValue in calc.TermValues)
+                {
+                    chart1.Series[termName].Points.AddXY(termValue, calc.ValuesDictionary[(termName, termValue)]);
+                }
+            }
         }
 
         private void DataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
@@ -52,9 +71,13 @@ namespace FuzzyLogic.Forms
         private void Button1_Click(object sender, EventArgs e)
         {
             var calc = _dataClass.Calculation();
+            var tempDataClass = new DataClass("Table2", new Dictionary<string, ExpertClass>() {[calc.Name] = calc});
             _workWithDataGrid1 = new WorkWithDataGrid(
                 dataGridView2, 
-                new DataClass("Table2",  new Dictionary<string, ExpertClass>(){ [calc.Name] = calc }));
+                tempDataClass);
+            chart1.Series[0].ChartType = SeriesChartType.Line;
+            chart1.Series[0].Points.AddXY(1, 2);
+            chart1.Series[0].Points.AddXY(2, 2);
         }
     }
 }
