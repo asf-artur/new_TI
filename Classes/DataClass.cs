@@ -4,15 +4,29 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FuzzyLogic.Forms;
 
 namespace FuzzyLogic.Classes
 {
     public class DataClass
     {
-        //public List<ExpertClass> ExpertClasses;
+        public static Form1 Form1;
+
+        /// <summary>
+        /// Словарь класс эксперта по имени эксперта
+        /// </summary>
         public Dictionary<string, ExpertClass> ExpertClasses;
+
+        /// <summary>
+        /// Данные в виде таблицы для DataGridView
+        /// </summary>
         public DataTable DataTable;
 
+        public ExpertClass CalculatedExpertClass;
+
+        /// <summary>
+        /// Названия колонок
+        /// </summary>
         public List<string> ColumnCaptions
         {
             get
@@ -37,9 +51,9 @@ namespace FuzzyLogic.Classes
             //GenerateDataTable();
         }
 
-        public DataClass(string tableName, Dictionary<string, ExpertClass> expertClasses)
+        public DataClass(string tableName, ExpertClass expertClass)
         {
-            ExpertClasses = expertClasses;
+            ExpertClasses = new Dictionary<string, ExpertClass>() { [expertClass.Name] = expertClass };
             DataTable = new DataTable(tableName);
             GenerateDataTable();
         }
@@ -54,6 +68,9 @@ namespace FuzzyLogic.Classes
             {
                 temp[(termName, termValue)] = Convert.ToDecimal(e.Row[termValue]);
             }
+            
+            Calculation();
+            Form1.RefreshChartAndDataGrid();
         }
 
         public void Save()
@@ -61,6 +78,9 @@ namespace FuzzyLogic.Classes
             DataTable.WriteXml($"{DataTable.TableName}.xml", XmlWriteMode.WriteSchema);
         }
 
+        /// <summary>
+        /// Загрузка DataTable и Экспертов
+        /// </summary>
         public void Load()
         {
             DataTable.ReadXmlSchema($"{DataTable.TableName}.xml");
@@ -77,10 +97,8 @@ namespace FuzzyLogic.Classes
                 .Select(c => DataTable.Columns[c].ColumnName)
                 .ToList();
             var I = 0;
-            var J = 0;
             foreach (var expertName in expertNames)
             {
-                //I = 0;
                 var expert = new ExpertClass(expertName);
                 foreach (var termName in termNames)
                 {
@@ -97,6 +115,9 @@ namespace FuzzyLogic.Classes
             }
         }
 
+        /// <summary>
+        /// Генерация таблицы DataTable
+        /// </summary>
         public void GenerateDataTable()
         {
             var fixedColumns = new List<(string ColumnName, List<string> Items)>()
@@ -121,7 +142,6 @@ namespace FuzzyLogic.Classes
                 var column = new DataColumn()
                 {
                     ColumnName = columnName,
-                    //ColumnName = $"column{columnNames.IndexOf(columnName)}",
                     Caption = columnName,
                     DataType = typeof(decimal),
                     ReadOnly = false
@@ -129,6 +149,7 @@ namespace FuzzyLogic.Classes
                 if (columnNames.GetRange(0, fixedColumns.Count).Contains(columnName))
                 {
                     column.DataType = typeof(string);
+                    column.ReadOnly = true;
                 }
 
                 DataTable.Columns.Add(column);
@@ -151,7 +172,11 @@ namespace FuzzyLogic.Classes
             }
         }
 
-        public ExpertClass Calculation()
+        /// <summary>
+        /// Расчет значений экспертов для создания графика
+        /// </summary>
+        /// <returns></returns>
+        public void Calculation()
         {
             var resultDictionary = new Dictionary<(string TermName, string TermValue), decimal>();
             var expertsDictionary = ExpertClass.GetByExpertTermValue(ExpertClasses);
@@ -168,7 +193,7 @@ namespace FuzzyLogic.Classes
                 }
             }
 
-            return new ExpertClass("Общая сумма", resultDictionary);
+            CalculatedExpertClass = new ExpertClass("Общая сумма", resultDictionary);
         }
     }
 }

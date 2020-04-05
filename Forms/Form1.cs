@@ -23,6 +23,7 @@ namespace FuzzyLogic.Forms
 
         public void Init()
         {
+            DataClass.Form1 = this;
             _expertClass.Load();
             _expertClass1.Load();
             var dict1 = new Dictionary<string, ExpertClass>
@@ -42,42 +43,25 @@ namespace FuzzyLogic.Forms
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            var calc = _dataClass.Calculation();
-            var tempDataClass = new DataClass("Table2", new Dictionary<string, ExpertClass>() { [calc.Name] = calc });
-            _workWithDataGrid1 = new WorkWithDataGrid(
-                dataGridView2,
-                tempDataClass);
-            chart1.Series.Clear();
-            foreach (var termName in calc.TermNames)
-            {
-                chart1.Series.Add(termName);
-                chart1.Series[termName].ChartType = SeriesChartType.Line;
-                chart1.Series[termName].MarkerStyle = MarkerStyle.Circle;
-                chart1.Series[termName].BorderWidth = 5;
-                chart1.Series[termName].MarkerSize = 12;
-                var I = 0;
-                foreach (var termValue in calc.TermValues)
-                {
-                    chart1.Series[termName].Points.AddXY(termValue, calc.ValuesDictionary[(termName, termValue)]);
-                }
-            }
+            _dataClass.Calculation();
+            var tempDataClass = new DataClass("Table2", _dataClass.CalculatedExpertClass);
+            _workWithDataGrid1 = new WorkWithDataGrid(dataGridView2, tempDataClass);
+            WorkWithCharts.DrawChart(chart1, _dataClass.CalculatedExpertClass);
         }
 
         private void DataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-            var a = dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
         }
 
         private void Button1_Click(object sender, EventArgs e)
         {
-            var calc = _dataClass.Calculation();
-            var tempDataClass = new DataClass("Table2", new Dictionary<string, ExpertClass>() {[calc.Name] = calc});
-            _workWithDataGrid1 = new WorkWithDataGrid(
-                dataGridView2, 
-                tempDataClass);
-            chart1.Series[0].ChartType = SeriesChartType.Line;
-            chart1.Series[0].Points.AddXY(1, 2);
-            chart1.Series[0].Points.AddXY(2, 2);
+        }
+
+        public void RefreshChartAndDataGrid()
+        {
+            var tempDataClass = new DataClass("Table2", _dataClass.CalculatedExpertClass);
+            _workWithDataGrid1 = new WorkWithDataGrid(dataGridView2, tempDataClass);
+            WorkWithCharts.DrawChart(chart1, _dataClass.CalculatedExpertClass);
         }
     }
 }

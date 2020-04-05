@@ -8,9 +8,19 @@ namespace FuzzyLogic.Classes
 {
     public class ExpertClass
     {
+        /// <summary>
+        /// Словарь значений : 0 или 1 по паре (имя терма, значение терма)
+        /// </summary>
         public Dictionary<(string TermName, string TermValue), decimal> ValuesDictionary;
+
+        /// <summary>
+        /// Имя эксперта
+        /// </summary>
         public string Name;
 
+        /// <summary>
+        /// Значения термов
+        /// </summary>
         public List<string> TermValues
         {
             get
@@ -20,6 +30,9 @@ namespace FuzzyLogic.Classes
             }
         }
 
+        /// <summary>
+        /// Название терма
+        /// </summary>
         public List<string> TermNames
         {
             get
@@ -29,18 +42,32 @@ namespace FuzzyLogic.Classes
             }
         }
 
+        /// <summary>
+        /// Создание эксперта с нуля
+        /// </summary>
+        /// <param name="name">Имя эксперта</param>
         public ExpertClass(string name)
         {
             ValuesDictionary = new Dictionary<(string TermName, string TermValue), decimal>();
             Name = name;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name">Имя эксперта</param>
+        /// <param name="valuesDictionary">Значения</param>
         public ExpertClass(string name, Dictionary<(string TermName, string TermValue), decimal> valuesDictionary)
         {
             ValuesDictionary = valuesDictionary;
             Name = name;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expertClassesDictionary">Словарь класс эксперта по имени эксперта</param>
+        /// <returns>Возращает словарь значений по именам экспертов</returns>
         public static Dictionary<(string ExpertName, string TermName, string TermValue), decimal> GetByExpertTermValue(Dictionary<string, ExpertClass> expertClassesDictionary)
         {
             var result = new Dictionary<(string ExpertName, string TermName, string TermValue), decimal>();
@@ -60,6 +87,10 @@ namespace FuzzyLogic.Classes
             return result;
         }
 
+        /// <summary>
+        /// Загрузка имен термов, значений термов, количества экспертов
+        /// </summary>
+        /// TODO Сделать загрузку
         public void Load()
         {
             var termNames = new List<string>()
@@ -84,6 +115,11 @@ namespace FuzzyLogic.Classes
             }
         }
 
+        /// <summary>
+        /// Получение значений по имени терма
+        /// </summary>
+        /// <param name="termName">Имя терма</param>
+        /// <returns>Значения</returns>
         public List<decimal> GetValuesByTermName(string termName)
         {
             var result = new List<decimal>();

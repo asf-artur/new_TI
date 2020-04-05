@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Classes\DataClass.cs" />
     <Compile Include="Classes\ExpertClass.cs" />
+    <Compile Include="Classes\WorkWithCharts.cs" />
     <Compile Include="Classes\WorkWithDataGrid.cs" />
     <Compile Include="Forms\Form1.cs">
       <SubType>Form</SubType>
