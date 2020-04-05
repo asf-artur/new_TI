@@ -115,6 +115,19 @@ namespace FuzzyLogic.Classes
             }
         }
 
+        public void Load(List<string> termNames, List<string> termValues)
+        {
+            var I = 0;
+            foreach (var termName in termNames)
+            {
+                foreach (var termValue in termValues)
+                {
+                    ValuesDictionary[(termName, termValue)] = I;
+                    I++;
+                }
+            }
+        }
+
         /// <summary>
         /// Получение значений по имени терма
         /// </summary>

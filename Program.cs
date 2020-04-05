@@ -17,7 +17,9 @@ namespace FuzzyLogic
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            var form1 = new Form1 {Visible = false};
+            var fromForParametersSet = new FromForParametersSet(form1);
+            Application.Run(fromForParametersSet);
         }
     }
 }

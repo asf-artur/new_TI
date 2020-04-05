@@ -51,6 +51,14 @@ namespace FuzzyLogic.Classes
             //GenerateDataTable();
         }
 
+        public DataClass(string tableName, Dictionary<string, ExpertClass> expertClasses)
+        {
+            ExpertClasses = expertClasses;
+            DataTable = new DataTable(tableName);
+            GenerateDataTable();
+            DataTable.RowChanging += DataTable_Row_Changing;
+        }
+
         public DataClass(string tableName, ExpertClass expertClass)
         {
             ExpertClasses = new Dictionary<string, ExpertClass>() { [expertClass.Name] = expertClass };

@@ -35,10 +35,24 @@ namespace FuzzyLogic.Forms
             _workWithDataGrid = new WorkWithDataGrid(dataGridView1, _dataClass);
         }
 
+        public void Init(int expertCount, List<string> termNames, List<string> termValues)
+        {
+            DataClass.Form1 = this;
+            var dict1 = new Dictionary<string, ExpertClass>();
+            for (var i = 0; i < expertCount; i++)
+            {
+                var tempExpertClass = new ExpertClass($"Эксперт{i+1}");
+                tempExpertClass.Load(termNames, termValues);
+                dict1[tempExpertClass.Name] = tempExpertClass;
+            }
+            _dataClass = new DataClass("Table1", dict1);
+            _workWithDataGrid = new WorkWithDataGrid(dataGridView1, _dataClass);
+        }
+
         public Form1()
         {
             InitializeComponent();
-            Init();
+            //Init();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -53,15 +67,16 @@ namespace FuzzyLogic.Forms
         {
         }
 
-        private void Button1_Click(object sender, EventArgs e)
-        {
-        }
-
         public void RefreshChartAndDataGrid()
         {
             var tempDataClass = new DataClass("Table2", _dataClass.CalculatedExpertClass);
             _workWithDataGrid1 = new WorkWithDataGrid(dataGridView2, tempDataClass);
             WorkWithCharts.DrawChart(chart1, _dataClass.CalculatedExpertClass);
+        }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
         }
     }
 }
